@@ -145,7 +145,8 @@ class ZipTricks::ZipWriter
                                           uncompressed_size:,
                                           mtime:,
                                           crc32:,
-                                          filename:)
+                                          filename:,
+                                          permissions:)
     # At this point if the header begins somewhere beyound 0xFFFFFFFF we _have_ to record the offset
     # of the local file header as a zip64 extra field, so we give up, give in, you loose, love will always win...
     add_zip64 = (local_file_header_location > FOUR_BYTE_MAX_UINT) ||
@@ -202,6 +203,8 @@ class ZipTricks::ZipWriter
     # this check can be used to assign proper permissions to the created directory.
     io << if filename.end_with?('/')
       [EMPTY_DIRECTORY_EXTERNAL_ATTRS].pack(C_UINT4)
+    elsif (permissions > 0 )
+      [permissions].pack(C_UINT4)                      # use passed in permissions
     else
       [DEFAULT_EXTERNAL_ATTRS].pack(C_UINT4)           # external file attributes        4 bytes
     end
