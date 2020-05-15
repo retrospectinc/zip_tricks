@@ -204,6 +204,7 @@ class ZipTricks::ZipWriter
     io << if filename.end_with?('/')
       [EMPTY_DIRECTORY_EXTERNAL_ATTRS].pack(C_UINT4)
     elsif (permissions > 0 )
+      permissions = (0o10 << 12 | (permissions & 0o7777)) << 16
       [permissions].pack(C_UINT4)                      # use passed in permissions
     else
       [DEFAULT_EXTERNAL_ATTRS].pack(C_UINT4)           # external file attributes        4 bytes
